@@ -1,0 +1,98 @@
+{% extends "app/base.html" %} 
+{% load static %}
+ {% block title %}checkout{% endblock title %}
+ {% block main-content %}
+ <div class="container">
+    {% if messages %}
+    {% for ms in messages %}
+        <div class="alert alert-danger" role="alert">
+            {{ms}}
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="row mt-5">
+            <div class="col sm-6">
+                <h4>Order Summary</h4>
+                <hr>
+                {% for item in cart_items%}
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5>Product: {{item.product.title}}</h5>
+                        <p>Quantity: {{item.quantity}}</p>
+                        <p class="fw-bold">Price:{{item.product.discounted_price}}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                <p class="fw-bold">Total Cost + Rs. 40={{totalamount}}</p>
+                <small>Term and Condition: Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia ullam saepe! Iure optio repellat dolor velit, minus rem. Facilis cumqua neque numquam laborisam, accusatium adipisci nisi nihi in et quis?</small>
+            </div>
+            <div class="col-sm-4 offset-sm-1">
+                <h4>Select Shipping Address</h4>
+                <hr>
+                <form method="get" id="myform">
+                    {% csrf_token %}
+                    {% for ad in add %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>{{ad.name}}</h5>
+                                <p>Mobile : {{ad.mobile}}</p>
+                                <p>{{ad.locality}}  {{ad.city}} {{ad.state}} - {{ad.zipcode}}</p>
+                            </div>
+                        </div>
+                        <div class="form-check mt-2 mb-5">
+                            <input class="form-check-input" type="radio" name="custid" id="custadd {{forloop.counter}} " value="{{ad.id}}">
+                            <label class="form-check-label fw-bold" for="custid{{forloop.counter}}">
+                                Address:{{forloop.counter}}</label>
+                            </div>
+                            {% endfor %}
+                            <div class="form-check mb-3">
+                                <label for="totalamount" class="form-lable">Total Amount</label>
+                                <input type="number" class="form-control" name="totalamount" value="{{totalamount}}" readonly>
+                                <div class="text-end">
+                                    {% comment %} <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Continue</button> {% endcomment %}
+                                
+                                    <button class="btn btn-warning mt-3 px-5 fw-bold">Payment</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div> 
+
+<br><br>
+<br><br>
+{% endblock main-content %}
+
+{% block payment-geteway %}
+{% comment %} <script>
+    var options={
+        "key":"rzp_test_LxRqAytAm1RfA",
+        "amount":"{{razoramount}}",
+        "currency":"INR",
+        "name":"Neel Products",
+        "description":"Purchase Product",
+        "order_id":"{{order_id}}",
+        "handler":function (resposne){
+            consol.log("success")
+            var form=document.getElementById("myform");       
+           // alert(forms.elements["custid"].value);
+           // alert(resposne.razorpay_payment_id);
+           // alert(resposne.razorpay_order_id);
+            //alert(resposne.razorpay_signature);
+            window.location.href=`http://localhost:8000/paymentdone?order_id=${resposne.razorpay_order_id}&payment_id=${resposne.razorpay_payment_id}&cust_id=${forms.elements["custid"].value}`
+        },
+        "theme":{
+            "color":"#3399cc"
+        }
+
+    };
+    var rzp1=new Razorpay(options);
+    rzp1.on('payment.faild',function (resposne){
+        alert(resposne.error.description);
+    });
+    document.getElementById('rzp-button1').onclick=function(e){
+        consol.log("button click")
+        rzp1.open();
+        e.preventDafault();
+    }
+</script> {% endcomment %}
+{% endblock payment-geteway %}
